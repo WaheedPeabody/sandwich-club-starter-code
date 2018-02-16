@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -12,17 +13,31 @@ import com.udacity.sandwichclub.utils.JsonUtils;
 
 import org.json.JSONException;
 
+import java.util.Arrays;
+
 public class DetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_POSITION = "extra_position";
     private static final int DEFAULT_POSITION = -1;
+
+    private TextView nameTv;
+    private TextView alsoKnownAsTv;
+    private TextView ingredientsTv;
+    private TextView placeOfOriginTv;
+    private TextView descriptionTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        ImageView ingredientsIv = findViewById(R.id.image_iv);
+        ImageView imageView = findViewById(R.id.image_iv);
+
+        nameTv = findViewById(R.id.nameTv);
+        alsoKnownAsTv = findViewById(R.id.alsoKnownAsTv);
+        ingredientsTv = findViewById(R.id.ingredientsTv);
+        placeOfOriginTv = findViewById(R.id.placeOfOriginTv);
+        descriptionTv = findViewById(R.id.descriptionTv);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -44,16 +59,15 @@ public class DetailActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         if (sandwich == null) {
-            // Sandwich data unavailable
             closeOnError();
-            return;
         }
 
-        populateUI();
+        populateUI(sandwich);
         Picasso.with(this)
                 .load(sandwich.getImage())
-                .into(ingredientsIv);
+                .into(imageView);
 
         setTitle(sandwich.getMainName());
     }
@@ -63,7 +77,15 @@ public class DetailActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
     }
 
-    private void populateUI() {
-        // TODO:
+    private void populateUI(Sandwich sandwich) {
+        nameTv.setText(sandwich.getMainName());
+        placeOfOriginTv.setText(sandwich.getPlaceOfOrigin());
+        descriptionTv.setText(sandwich.getDescription());
+        for (String alsoKnownAs : sandwich.getAlsoKnownAs()) {
+            alsoKnownAsTv.append(alsoKnownAs + " - ");
+        }
+        for (String ingredient : sandwich.getIngredients()) {
+            ingredientsTv.append(ingredient + " - ");
+        }
     }
 }
